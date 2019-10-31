@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script type="module">
+    import vue3 from './vue3.js';
+
+    const {reactive, effect} = vue3;
+
+    let obj = {
+      name: '11',
+      age: {
+        n: 5
+      }
+    };
+
+    // 设置数据响应
+    obj = reactive(obj);
+
+    // 数据响应
+    effect(function (key, value) {
+      console.log('属性改变了', key, value)
+    })
+
+    // 修改数据
+    obj.name = '22';
+    obj.age.n = 18;
+  </script>
+</body>
+</html>
