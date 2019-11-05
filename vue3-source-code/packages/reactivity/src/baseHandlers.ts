@@ -11,9 +11,15 @@ const builtInSymbols = new Set(
     .filter(value => typeof value === 'symbol')
 )
 
+// 这个文件夹内容不多，主要就看 createGetter 和 set 两个函数即可，其中
+// 使用到了 effect 文件中的一些函数，那里是我们需要具体看的
+
+// get 的文档 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/get
 function createGetter(isReadonly: boolean) {
   return function get(target: any, key: string | symbol, receiver: any) {
+    // 获得结果
     const res = Reflect.get(target, key, receiver)
+    // 判断类型
     if (typeof key === 'symbol' && builtInSymbols.has(key)) {
       return res
     }
@@ -21,6 +27,7 @@ function createGetter(isReadonly: boolean) {
       return res.value
     }
     track(target, OperationTypes.GET, key)
+    // 判断是否为对象，是的话将对象包装成 proxy
     return isObject(res)
       ? isReadonly
         ? // need to lazy access readonly and reactive here to avoid
@@ -38,14 +45,17 @@ function set(
   receiver: any
 ): boolean {
   value = toRaw(value)
+  // 用于判断是否新增 key
   const hadKey = hasOwn(target, key)
   const oldValue = target[key]
+  // 判断是否是 ref
   if (isRef(oldValue) && !isRef(value)) {
     oldValue.value = value
     return true
   }
   const result = Reflect.set(target, key, value, receiver)
   // don't trigger if target is something up in the prototype chain of original
+  // set 行为核心逻辑是 trigger
   if (target === toRaw(receiver)) {
     /* istanbul ignore else */
     if (__DEV__) {
@@ -92,6 +102,7 @@ function ownKeys(target: any): (string | number | symbol)[] {
   return Reflect.ownKeys(target)
 }
 
+// 这里是开头，对五个行为做了劫持，主要讲解 get 和 set 行为
 export const mutableHandlers: ProxyHandler<any> = {
   get: createGetter(false),
   set,

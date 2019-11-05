@@ -4,6 +4,7 @@
  - [vue3源码](https://github.com/vuejs/vue-next)
  - [Vue Function-based API RFC](https://www.zhihu.com/people/evanyou/posts)
  - [尝鲜Vue3系列文章](https://juejin.im/post/5da442bb6fb9a04de42f76cf)
+ - [Vue 3 原理剖析：数据响应系统](https://juejin.im/post/5d996e3e6fb9a04e3043cc5b)
 
 ## Start
  - NodeJS 10.0 need
